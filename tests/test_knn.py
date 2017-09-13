@@ -1,3 +1,4 @@
+import os
 import logging
 import itertools
 import numpy
@@ -53,3 +54,35 @@ class KNNTest(TestBase):
             dataset.append([float(p) for p in parts[:3]])
             labels.append(parts[-1])
         return numpy.array(dataset), labels
+
+    @staticmethod
+    def img2vector(fpath):
+        vec = numpy.zeros((1, 1024))
+        with open(fpath) as fp:
+            for i in range(32):
+                line = fp.readline()
+                for j in range(32):
+                    vec[0, 32*i + j] = int(line[j])
+        return vec
+
+    def imgdir2dataset(self, folder):
+        fullpath = self.get_file(folder)
+        files = os.listdir(fullpath)
+        length = len(files)
+        dataset = numpy.zeros((length, 1024))
+        labels = []
+        for i in range(length):
+            fname = files[i]
+            dataset[i:] = self.img2vector(os.path.join(fullpath, fname))
+            labels.append(fname.split('_')[0])
+        return dataset, labels
+
+    def test_handwriting(self):
+        train_set, train_lables = self.imgdir2dataset('knn/trainingDigits')
+        test_set, test_labels = self.imgdir2dataset('knn/testDigits')
+        err = 0
+        for x, label in itertools.izip(test_set, test_labels):
+            result = classify(x, train_set, train_lables, 6)
+            if result != label:
+                err += 1
+        logging.info('Error rate: %f', float(err)/len(test_labels))
