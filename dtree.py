@@ -60,7 +60,7 @@ def best_feature_split(dataset):
     feature_num = len(dataset[0]) - 1  # exclude result column
     base_entroy = entroy(dataset)
     best_index = -1
-    best_info_gain = 0
+    best_info_gain = -1e100  # make base gain as infinate min
     for i in range(feature_num):
         # all possible values at index i
         values = set([vec[i] for vec in dataset])
@@ -94,7 +94,7 @@ def get_majority(labels):
     return major
 
 
-def create_tree(dataset, labels):
+def create_tree(dataset, input_labels):
     '''
     create decision tree
 
@@ -104,6 +104,7 @@ def create_tree(dataset, labels):
 
     return: desicion tree
     '''
+    labels = input_labels[:]
     categories = [vec[-1] for vec in dataset]
     # terminate condition:
     if categories.count(categories[0]) == len(categories):
@@ -125,3 +126,23 @@ def create_tree(dataset, labels):
             split_dataset(dataset, best_index, value),
             sub_labels)  # iter to sub tree
     return tree
+
+
+def classify(tree, feature_labels, input_vec):
+    '''
+    classify using decision tree
+
+    params:
+        tree: decision tree
+        feature_labels: feature labels list
+        input_vec: input vec
+    '''
+    root = tree.keys()[0]
+    sub_dict = tree[root]
+    index = feature_labels.index(root)  # feature index
+    for key, sub_node in sub_dict.iteritems():
+        if input_vec[index] == key:  # tree matched
+            if isinstance(sub_node, dict):  # is sub tree, iter
+                return classify(sub_node, feature_labels, input_vec)
+            else:  # leaf, return value
+                return sub_node

@@ -34,3 +34,17 @@ class DtreeTest(TestBase):
         expected = {'no surfacing':
                     {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}}
         self.assertDictEqual(tree, expected)
+
+    def test_classify(self):
+        fpath = self.get_file('dtree/lenses.txt')
+        dataset = []
+        with open(fpath) as fp:
+            for l in fp.readlines():
+                dataset.append(l.strip().split('\t'))
+        labels = ['age', 'prescript', 'astigmatic', 'tearRate']
+        tree = dtree.create_tree(dataset, labels)
+        logging.info(tree)
+        test_vec = ['pre', 'myope', 'no', 'normal']
+        result = dtree.classify(tree, labels, test_vec)
+        logging.info('result: ' + result)
+        self.assertEquals(result, 'soft')
