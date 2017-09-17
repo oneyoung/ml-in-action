@@ -11,17 +11,26 @@ def create_dataset():
         [0, 1, 'no'],
         [0, 1, 'no']
     ]
-    return dataset
+    labels = ['no surfacing', 'flippers']
+    return dataset, labels
 
 
 class DtreeTest(TestBase):
     def test_entroy(self):
-        dataset = create_dataset()
+        dataset, labels = create_dataset()
         entroy = dtree.entroy(dataset)
         logging.info(entroy)
         self.assertTrue(0.97 < entroy < 0.98)
 
     def test_best_feature_split(self):
-        dataset = create_dataset()
+        dataset, labels = create_dataset()
         index = dtree.best_feature_split(dataset)
         self.assertEqual(index, 0)
+
+    def test_create_tree(self):
+        dataset, labels = create_dataset()
+        tree = dtree.create_tree(dataset, labels)
+        logging.info(tree)
+        expected = {'no surfacing':
+                    {0: 'no', 1: {'flippers': {0: 'no', 1: 'yes'}}}}
+        self.assertDictEqual(tree, expected)
