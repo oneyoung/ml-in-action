@@ -11,6 +11,16 @@ class LogisticTest(TestBase):
         logging.info(result)
         self.assertEqual(len(result), 3)
 
+    def test_stoc_grad_ascent0(self):
+        data, labels = self.load_data('testSet.txt')
+        result = logistic.stoc_grad_ascent0(data, labels)
+        logging.info(result)
+
+    def test_stoc_grad_ascent(self):
+        data, labels = self.load_data('testSet.txt')
+        result = logistic.stoc_grad_ascent(data, labels)
+        logging.info(result)
+
     def load_data(self, fname):
         folder = self.get_file('logistic')
         fpath = os.path.join(folder, fname)

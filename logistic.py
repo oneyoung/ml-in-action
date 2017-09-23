@@ -30,3 +30,39 @@ def grad_ascent(data, labels):
         # grad ascent alg: w := w + alpha * delta(f(w))
         weights = weights + alpha*data_mat.transpose().dot(err)
     return weights
+
+
+def stoc_grad_ascent0(data_input, labels):
+    '''
+    stochastic gradient ascent
+    '''
+    data = numpy.array(data_input)
+    n, m = numpy.shape(data)
+    alpha = 0.01
+    weights = numpy.ones(m)
+    for i in xrange(n):
+        h = sigmod(sum([data[i]*weights]))  # just value, not matrix
+        err = labels[i] - h
+        weights = weights + alpha*data[i]*err
+    return weights
+
+
+def stoc_grad_ascent(data_input, labels, iter=150):
+    '''
+    stochastic gradient ascent, improved version
+    '''
+    data = numpy.array(data_input)
+    n, m = numpy.shape(data)
+    alpha = 0.01
+    weights = numpy.ones(m)
+    for j in xrange(iter):  # iterator mutiple loops for better result
+        data_indexes = range(n)  # array of indexes to data
+        for i in range(n):
+            alpha = 4/(1.0 + i + j) + 0.01  # use dymanic alpha
+            # random pick an sample from data
+            rand_index = int(numpy.random.uniform(0, len(data_indexes)))
+            h = sigmod(sum([data[rand_index]*weights]))
+            err = labels[rand_index] - h
+            weights = weights + alpha*err*data[rand_index]
+            del(data_indexes[rand_index])  # avoid use this val in next loop
+    return weights
