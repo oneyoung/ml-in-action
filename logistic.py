@@ -29,7 +29,7 @@ def grad_ascent(data, labels):
         err = label_mat - h  # in ideal situation, should be Nx1 zeros
         # grad ascent alg: w := w + alpha * delta(f(w))
         weights = weights + alpha*data_mat.transpose().dot(err)
-    return weights
+    return numpy.array(weights)
 
 
 def stoc_grad_ascent0(data_input, labels):
